@@ -1,16 +1,18 @@
 package com.example.springboot_security403v2;
 
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Map;
 
 @Controller
 public class HomeController {
@@ -19,6 +21,47 @@ public class HomeController {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    CarRepository carRepository;
+
+    @Autowired
+    CloudinaryConfig cloudc;
+
+    @RequestMapping("/")
+    public String listCars(Model model) {
+        model.addAttribute("cars", carRepository.findAll());
+        return "list";
+    }
+
+    @GetMapping("/add")
+    public String newCar(Model model) {
+        Car car = new Car();
+        car.setPic("");
+        model.addAttribute("car", car);
+        return "carForm";
+    }
+    @PostMapping("/add")
+    public String processCar(@ModelAttribute Car car, @RequestParam("file") MultipartFile file) {
+        if(file.isEmpty()) {
+            return "redirect:/add";
+        }
+
+        try {
+            Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourceType", "auto"));
+            car.setPic(uploadResult.get("url").toString());
+           carRepository.save(car);
+        }catch(IOException e) {
+            e.printStackTrace();
+            return "redirect:/add";
+        }
+        return "redirect:/";
+
+    }
+
+
+
+
 
     @GetMapping("/register")
     public String showRegistrationPage(Model model) {
@@ -53,10 +96,7 @@ public class HomeController {
 
     }
 
-    @RequestMapping("/")
-    public String index() {
-        return "index";
-    }
+
 
     @RequestMapping("/course")
     public String coursePage() {

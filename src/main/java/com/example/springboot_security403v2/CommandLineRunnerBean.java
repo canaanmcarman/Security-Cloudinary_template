@@ -13,6 +13,9 @@ public class CommandLineRunnerBean implements CommandLineRunner {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    CarRepository carRepository;
+
     public void run(String... args) {
         User user = new User("bart", "bart@domain.com", "bart", "Bart", "Simpson", true);
         Role userRole = new Role("bart", "ROLE_USER");
@@ -27,5 +30,11 @@ public class CommandLineRunnerBean implements CommandLineRunner {
         userRepository.save(admin);
         roleRepository.save(adminRole1);
         roleRepository.save(adminRole2);
+
+        Car car = new Car("CT4", "Cadillac", "compact luxury sudan in red",
+                "https://res.cloudinary.com/dnjzvt63c/image/upload/v1628532053/https___specials-images.forbesimg.com_imageserve_5d3703b3090f4300070d570d_2020-Cadillac-CT5_960x0_udnqey.jpg");
+        Car car2 = new Car("Corvette SR", "Chevorlet", "Sleek sports car that goes fast", "https://res.cloudinary.com/dnjzvt63c/image/upload/v1628532108/https___specials-images.forbesimg.com_imageserve_5d3703e2f1176b00089761a6_2020-Chevrolet-Corvette-Stingray_960x0_mve90l.jpg");
+        carRepository.save(car);
+        carRepository.save(car2);
     }
 }
