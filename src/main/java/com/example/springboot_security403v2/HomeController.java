@@ -23,44 +23,7 @@ public class HomeController {
     RoleRepository roleRepository;
 
     @Autowired
-    CarRepository carRepository;
-
-    @Autowired
     CloudinaryConfig cloudc;
-
-    @RequestMapping("/")
-    public String listCars(Model model) {
-        model.addAttribute("cars", carRepository.findAll());
-        return "list";
-    }
-
-    @GetMapping("/add")
-    public String newCar(Model model) {
-        Car car = new Car();
-        car.setPic("");
-        model.addAttribute("car", car);
-        return "carForm";
-    }
-    @PostMapping("/add")
-    public String processCar(@ModelAttribute Car car, @RequestParam("file") MultipartFile file) {
-        if(file.isEmpty()) {
-            return "redirect:/add";
-        }
-
-        try {
-            Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourceType", "auto"));
-            car.setPic(uploadResult.get("url").toString());
-           carRepository.save(car);
-        }catch(IOException e) {
-            e.printStackTrace();
-            return "redirect:/add";
-        }
-        return "redirect:/";
-
-    }
-
-
-
 
 
     @GetMapping("/register")
@@ -94,21 +57,6 @@ public class HomeController {
         model.addAttribute("user", userRepository.findByUsername(username));
         return "secure";
 
-    }
-
-
-
-    @RequestMapping("/course")
-    public String coursePage() {
-        return "course";
-    }
-    @RequestMapping("/admin")
-    public String teacherPage() {
-        return "admin";
-    }
-    @RequestMapping("/student")
-    public String studenPage() {
-        return "student";
     }
 
     @RequestMapping("/login")
